@@ -24,7 +24,7 @@ from ..constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAU
     DEFAULT_VIDEO_PATCH_TOKEN, DEFAULT_VID_START_TOKEN, DEFAULT_VID_END_TOKEN
 
 
-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", alphavalue=0, rvalue=0, is_turbo=False, **kwargs):
+def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", alphavalue=0, rvalue=0, is_folder=False, **kwargs):
     kwargs = {"device_map": device_map, **kwargs}
 
     if device != "cuda":
@@ -152,7 +152,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         if model.config.mm_video_tower is not None:
             video_tower = model.get_video_tower()
             if not video_tower.is_loaded:
-                video_tower.load_model(alphavalue=alphavalue,rvalue=rvalue,is_turbo=is_turbo)
+                video_tower.load_model(alphavalue=alphavalue,rvalue=rvalue,is_folder=is_folder)
             video_tower.to(device=device, dtype=torch.float16)
             video_processor = video_tower.video_processor
             processor['video'] = video_processor

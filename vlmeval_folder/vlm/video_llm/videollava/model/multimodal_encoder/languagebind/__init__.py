@@ -27,7 +27,7 @@ from .thermal.modeling_thermal import LanguageBindThermal
 from .thermal.tokenization_thermal import LanguageBindThermalTokenizer
 from .thermal.processing_thermal import LanguageBindThermalProcessor
 
-from ..turbo import patch
+from ..folder import patch
 
 
 config_dict = {
@@ -192,7 +192,7 @@ class LanguageBindVideoTower(nn.Module):
             self.cfg_only = LanguageBindVideoConfig.from_pretrained(self.video_tower_name, cache_dir=self.cache_dir)
 
     ############################################################
-    def load_model(self, alphavalue=0, rvalue=0, is_turbo=False):
+    def load_model(self, alphavalue=0, rvalue=0, is_folder=False):
         model = LanguageBindVideo.from_pretrained(self.video_tower_name, cache_dir=self.cache_dir)
         self.video_processor = LanguageBindVideoProcessor(model.config)
 
@@ -200,13 +200,13 @@ class LanguageBindVideoTower(nn.Module):
         # model = LanguageBindImage.from_pretrained('LanguageBind/LanguageBind_Image', cache_dir=self.cache_dir)
         self.video_tower = model.vision_model
         self.video_tower.requires_grad_(False)
-        patch.turbo_video(self.video_tower)
+        patch.folder_video(self.video_tower)
         self.video_tower.alpha = alphavalue
         self.video_tower.r = rvalue
-        self.video_tower.is_turbo = is_turbo
+        self.video_tower.is_folder = is_folder
         print(f"alpha value: {self.video_tower.alpha}")
         print(f"rval value: {self.video_tower.r}")
-        print(f"turbo value: {self.video_tower.is_turbo}")
+        print(f"folder value: {self.video_tower.is_folder}")
         self.is_loaded = True
         
 

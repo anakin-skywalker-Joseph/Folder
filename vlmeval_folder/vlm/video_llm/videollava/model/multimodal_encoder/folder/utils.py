@@ -11,8 +11,8 @@ def benchmark(
     device: torch.device = 0,
     input_size: Tuple[int] = (3, 224, 224),
     batch_size: int = 64,
-    runs: int = 40,           ## epoch
-    throw_out: float = 0.25,  ## warm_up epoch/总 epoch
+    runs: int = 40,           
+    throw_out: float = 0.25, 
     use_fp16: bool = False,
     verbose: bool = False,
 ) -> float:
@@ -47,7 +47,7 @@ def benchmark(
     end = time.time()
     elapsed = end - start   
 
-    throughput = total / elapsed   ## 吞吐
+    throughput = total / elapsed   
 
     if verbose:
         print(f"Throughput: {throughput:.2f} im/s")

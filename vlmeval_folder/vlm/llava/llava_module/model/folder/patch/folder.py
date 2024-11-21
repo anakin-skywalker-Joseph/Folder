@@ -9,7 +9,7 @@ import ipdb
 import torch.nn as nn
 import torch.nn.functional as F
 
-class TurboAttention(CLIPAttention):
+class FolderAttention(CLIPAttention):
     def forward(self,
         hidden_states: torch.Tensor,
         attention_mask: Optional[torch.Tensor] = None,
@@ -87,14 +87,14 @@ class TurboAttention(CLIPAttention):
 
         return attn_output, attn_weights_reshaped, key_states.reshape(bsz, self.num_heads, -1, self.head_dim).mean(1), attn_cls
 
-class TurboEncoderLayer(CLIPEncoderLayer):                                         
+class FolderEncoderLayer(CLIPEncoderLayer):                                         
     def forward(self,
         hidden_states: torch.Tensor,
         attention_mask: torch.Tensor,
         causal_attention_mask: torch.Tensor,
         output_attentions: Optional[bool] = False,
         ):   ## x.shape=[256,197,768]
-        attn_size = self._turbo_info["size"] if self._turbo_info["prop_attn"] else None
+        attn_size = self._folder_info["size"] if self._folder_info["prop_attn"] else None
 
         residual = hidden_states
 
@@ -108,7 +108,7 @@ class TurboEncoderLayer(CLIPEncoderLayer):
         hidden_states = residual + hidden_states
         # set metric to hidden_states itself (not key value)
         metric = hidden_states[:]
-        r = self._turbo_info["r"].pop(0)
+        r = self._folder_info["r"].pop(0)
         if r > (hidden_states.shape[-2]-1)//2: #fold
             r_remove = min(hidden_states.shape[-2]//2-1,r)
             r = r-r_remove
@@ -116,27 +116,27 @@ class TurboEncoderLayer(CLIPEncoderLayer):
                 merge = bipartite_unimodal_matching(metric, 
                                                     attn_cls,
                                                     r_remove,
-                                                    self._turbo_info["class_token"], 
-                                                    self._turbo_info["alpha"],
-                                                    self._turbo_info["num_layer"],
-                                                    self._turbo_info["beta"],
-                                                    self._turbo_info["gamma"],
-                                                    self._turbo_info["r_threshold"])
-                hidden_states, self._turbo_info["size"], metric, attn_cls = merge_wavg_ours(merge, hidden_states, self._turbo_info["size"], metric, attn_cls)
+                                                    self._folder_info["class_token"], 
+                                                    self._folder_info["alpha"],
+                                                    self._folder_info["num_layer"],
+                                                    self._folder_info["beta"],
+                                                    self._folder_info["gamma"],
+                                                    self._folder_info["r_threshold"])
+                hidden_states, self._folder_info["size"], metric, attn_cls = merge_wavg_ours(merge, hidden_states, self._folder_info["size"], metric, attn_cls)
                 r_remove = min((hidden_states.shape[-2]-1)//2,r)
                 r = r-r_remove
         elif r > 0:
             merge = bipartite_unimodal_matching(metric, 
                                                 attn_cls,
                                                 r,
-                                                self._turbo_info["class_token"], 
-                                                self._turbo_info["alpha"],
-                                                self._turbo_info["num_layer"],
-                                                self._turbo_info["beta"],
-                                                self._turbo_info["gamma"],
-                                                self._turbo_info["r_threshold"])
-            hidden_states, self._turbo_info["size"] = merge_wavg_ours(merge, hidden_states, self._turbo_info["size"])
-        self._turbo_info["num_layer"]+=1
+                                                self._folder_info["class_token"], 
+                                                self._folder_info["alpha"],
+                                                self._folder_info["num_layer"],
+                                                self._folder_info["beta"],
+                                                self._folder_info["gamma"],
+                                                self._folder_info["r_threshold"])
+            hidden_states, self._folder_info["size"] = merge_wavg_ours(merge, hidden_states, self._folder_info["size"])
+        self._folder_info["num_layer"]+=1
         residual = hidden_states
         hidden_states = self.layer_norm2(hidden_states)
         hidden_states = self.mlp(hidden_states)
@@ -150,49 +150,49 @@ class TurboEncoderLayer(CLIPEncoderLayer):
         return outputs
 
 
-def make_turbo_class(transformer_class):
-    class TurboVisionTransformer(transformer_class):    
+def make_folder_class(transformer_class):
+    class FolderVisionTransformer(transformer_class):    
         def forward(self, *args, **kwdargs) -> torch.Tensor:
-            if self.is_turbo:
-                self._turbo_info["r"] = parse_r(self.config.num_hidden_layers, self.r)
-                self._turbo_info["r"][-2] += self.r #llava choose -2 layer feature, so to keep same token amount
+            if self.is_folder:
+                self._folder_info["r"] = parse_r(self.config.num_hidden_layers, self.r)
+                self._folder_info["r"][-2] += self.r #llava choose -2 layer feature, so to keep same token amount
             else:
                 removed_token = self.r*self.config.num_hidden_layers
                 ratio = [0,0,5]
                 last_remove = int(ratio[-1]/sum(ratio)*removed_token)
                 third_last_remove = int(ratio[0]/sum(ratio)*removed_token)
-                self._turbo_info["r"] = [0 for _ in range(self.config.num_hidden_layers-4)]+[third_last_remove, removed_token-last_remove-third_last_remove, last_remove, 0]
-            self._turbo_info["size"] = None
-            self._turbo_info["source"] = None
-            self._turbo_info["alpha"] = self.alpha
-            self._turbo_info["beta"] = self.beta
-            self._turbo_info["gamma"] =self.gamma
-            self._turbo_info["num_layer"]=self.num_layer
-            self._turbo_info["r_threshold"] =self.r_threshold
+                self._folder_info["r"] = [0 for _ in range(self.config.num_hidden_layers-4)]+[third_last_remove, removed_token-last_remove-third_last_remove, last_remove, 0]
+            self._folder_info["size"] = None
+            self._folder_info["source"] = None
+            self._folder_info["alpha"] = self.alpha
+            self._folder_info["beta"] = self.beta
+            self._folder_info["gamma"] =self.gamma
+            self._folder_info["num_layer"]=self.num_layer
+            self._folder_info["r_threshold"] =self.r_threshold
             return super().forward(*args, **kwdargs)
-    return TurboVisionTransformer
+    return FolderVisionTransformer
 
 def apply_patch(model: CLIPVisionTransformer, trace_source: bool = False, prop_attn: bool = True):
-    TurboVisionTransformer = make_turbo_class(model.__class__)    
-    model.__class__ = TurboVisionTransformer
+    FolderVisionTransformer = make_folder_class(model.__class__)    
+    model.__class__ = FolderVisionTransformer
     model.r = 0
     model.alpha=1
     model.beta=1   #unused
     model.gamma=0  #unused
     model.num_layer=0
     model.r_threshold = 40
-    model.is_turbo = False #whether to use Turbo or Folder
+    model.is_folder = False #whether to use Folder or Folder
     model.cls_token = True
-    model._turbo_info = {"r": model.r,"size": None,"source": None,"trace_source": trace_source,"prop_attn": prop_attn,
+    model._folder_info = {"r": model.r,"size": None,"source": None,"trace_source": trace_source,"prop_attn": prop_attn,
         "class_token": model.cls_token is not None, "alpha":model.alpha,
         "beta":model.beta,"gamma":model.gamma,"num_layer":0,"r_threshold" :model.r_threshold}
 
     for module in model.modules():
         if isinstance(module, CLIPEncoderLayer):
-            module.__class__ = TurboEncoderLayer
-            module._turbo_info = model._turbo_info
+            module.__class__ = FolderEncoderLayer
+            module._folder_info = model._folder_info
         elif isinstance(module, CLIPAttention):
-            module.__class__ = TurboAttention
+            module.__class__ = FolderAttention
 
 
 

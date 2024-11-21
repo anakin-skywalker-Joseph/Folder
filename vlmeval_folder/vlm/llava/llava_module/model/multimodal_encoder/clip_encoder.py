@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from transformers import CLIPVisionModel, CLIPImageProcessor, CLIPVisionConfig
-from ..turbo import patch
+from ..folder import patch
 
 class CLIPVisionTower(nn.Module):
     def __init__(self, vision_tower, args, delay_load=False):
@@ -21,7 +21,7 @@ class CLIPVisionTower(nn.Module):
         else:
             self.cfg_only = CLIPVisionConfig.from_pretrained(self.vision_tower_name)
 
-    def load_model(self, device_map=None, alphavalue=0, rvalue=0, is_turbo=False):
+    def load_model(self, device_map=None, alphavalue=0, rvalue=0, is_folder=False):
         if self.is_loaded:
             print('{} is already loaded, `load_model` called again, skipping.'.format(self.vision_tower_name))
             return
@@ -29,13 +29,13 @@ class CLIPVisionTower(nn.Module):
         self.image_processor = CLIPImageProcessor.from_pretrained(self.vision_tower_name)
         self.vision_tower = CLIPVisionModel.from_pretrained(self.vision_tower_name, device_map=device_map)
         self.vision_tower.requires_grad_(False)
-        patch.turbo(self.vision_tower.vision_model)
+        patch.folder(self.vision_tower.vision_model)
         self.vision_tower.vision_model.alpha = alphavalue
         self.vision_tower.vision_model.r = rvalue
-        self.vision_tower.vision_model.is_turbo = is_turbo
+        self.vision_tower.vision_model.is_folder = is_folder
         print(f"alpha value: {self.vision_tower.vision_model.alpha}")
         print(f"rval value: {self.vision_tower.vision_model.r}")
-        print(f"is turbo: {self.vision_tower.vision_model.is_turbo}")
+        print(f"is folder: {self.vision_tower.vision_model.is_folder}")
         self.is_loaded = True
 
     def feature_select(self, image_forward_outs):
