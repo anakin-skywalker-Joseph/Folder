@@ -181,7 +181,7 @@ def apply_patch(model: CLIPVisionTransformer, trace_source: bool = False, prop_a
     model.gamma=0  #unused
     model.num_layer=0
     model.r_threshold = 40
-    model.is_folder = False #whether to use Folder or Folder
+    model.is_turbo = False #whether to use Folder or Turbo
     model.cls_token = True
     model._folder_info = {"r": model.r,"size": None,"source": None,"trace_source": trace_source,"prop_attn": prop_attn,
         "class_token": model.cls_token is not None, "alpha":model.alpha,
