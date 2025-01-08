@@ -205,7 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', default=1, type=int, help='alpha value')  
     parser.add_argument('--beta', default=1, type=int, help='third last layer proportion')
     parser.add_argument('--gamma', default=0, type=int, help='second last layer proportion') 
-    parser.add_argument('--is_turbo', default=False, type=bool, help='folder or folder')   
+    parser.add_argument('--is_turbo', default=False, type=bool, help='folder or turbo')   
     args = parser.parse_args()
 
     config = yaml.load(open(args.config, 'r'), Loader=yaml.Loader)
