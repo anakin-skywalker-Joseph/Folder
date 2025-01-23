@@ -153,7 +153,7 @@ class FolderEncoderLayer(CLIPEncoderLayer):
 def make_folder_class(transformer_class):
     class FolderVisionTransformer(transformer_class):    
         def forward(self, *args, **kwdargs) -> torch.Tensor:
-            if self.is_folder:
+            if self.is_turbo:
                 self._folder_info["r"] = parse_r(self.config.num_hidden_layers, self.r)
                 self._folder_info["r"][-2] += self.r #llava choose -2 layer feature, so to keep same token amount
             else:
