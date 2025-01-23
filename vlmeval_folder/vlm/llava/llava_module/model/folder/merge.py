@@ -11,8 +11,8 @@ def merge_wavg_ours(merge: Callable, x: torch.Tensor, size: torch.Tensor = None,
     if size is None:
         size = torch.ones_like(x[..., 0, None]) 
     # is_weighted: whether to use weighted merging, is_weighted+is_drop: whether to use direct dropping
-    is_weighted = True
-    is_drop = True
+    is_weighted = False
+    is_drop = False
     x = merge(x * size, mode="sum", is_weighted=is_weighted, token_size=size, is_drop=is_drop) 
     if metric is not None:
         attn_cls = merge(attn_cls.unsqueeze(-1), mode="mean")
