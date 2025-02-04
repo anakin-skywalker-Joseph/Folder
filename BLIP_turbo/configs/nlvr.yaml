@@ -1,0 +1,21 @@
+image_root: './BLIP/nlvr/nlvr2/Downloads' 
+ann_root: 'annotation'
+
+# set pretrained as a file path or an url
+pretrained: 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_nlvr.pth'
+#pretrained: './blip2/model_base_nlvr_2x_compress_nlvr2ed.pth'
+#size of vit model; base or large
+vit: 'base'
+batch_size_train: 16 
+batch_size_test: 64
+vit_grad_ckpt: False
+vit_ckpt_layer: 0
+max_epoch: 15
+
+image_size: 384
+
+# optimizer
+weight_decay: 0.05
+init_lr: 3e-5
+min_lr: 0
+

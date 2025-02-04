@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=3,4,6,7 python -m torch.distributed.run --nproc_per_node=4 test_retrieval.py --evaluate --config './configs/retrieval_coco.yaml' --output_dir 'output/Retrieval_coco' --r_value 30 --alpha 5 --beta 1 --gamma 0
