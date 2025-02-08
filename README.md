@@ -60,7 +60,7 @@ merge_features(image_features, metric=None, size=None, r=1, class_token=True)
 * We strongly recommand using this simplified version for deployment/comparison.
 
 ## Evaluation
-We leverage [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to do the evaluation. Please refer to the repo instruction and replace the related files with ours. Normally, by going to the corresponding repo and run
+We leverage [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to do the evaluation. Please refer to the repo instruction and replace the related files with ours. Normally, by going to the corresponding repo and run to build the environment
 ```shell
 pip install -e .
 ```
