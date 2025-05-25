@@ -131,8 +131,9 @@ def merge_features(image_features, metric=None, size=None, r=1, class_token=True
                                             class_token=class_token,
                                             )
         image_features, size, metric, _ = merge_folder(merge, image_features, size, metric)
-    log_size = 1 + size.log()
-    image_features = image_features * log_size
+    if r < image_features.shape[-2] // 2:
+        log_size = 1 + size.log()
+        image_features = image_features * log_size
     if is_batch == False:
         image_features = image_features.squeeze(0)
     return image_features, size, metric
