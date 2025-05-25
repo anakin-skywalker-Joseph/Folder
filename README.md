@@ -64,7 +64,6 @@ We leverage [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to do the e
 ```shell
 pip install -e .
 ```
-We also offer built-in evaluation code [here](https://github.com/anakin-skywalker-Joseph/Folder/tree/main/vlmevalkit_eval_llava_noinstall).
 
 ## 👍 Acknowledgement
 * [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) Fantastic MLLMs evaluation toolkit.
