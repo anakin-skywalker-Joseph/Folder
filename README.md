@@ -1,8 +1,8 @@
 # FOLDER: Accelerating Multi-modal Large Language Models with Enhanced Performance
 
-*This repository is the official implementation of Folder (Arxiv) and Turbo (ECCV2024 oral)*
+*This repository is the official implementation of Folder (ICCV2025) and Turbo (ECCV2024 oral)*
 
-**FOLDER: Accelerating Multi-modal Large Language Models with Enhanced Performance** (Arxiv) [[Paper](https://arxiv.org/pdf/2501.02430)] <br>
+**FOLDER: Accelerating Multi-modal Large Language Models with Enhanced Performance** (ICCV2025) [[Paper](https://arxiv.org/pdf/2501.02430)] <br>
 [Haicheng Wang*](https://scholar.google.com/citations?user=x0Uk7S8AAAAJ&hl=en), [Zhemeng Yu*](https://scholar.google.com/citations?user=1cwEkjEAAAAJ&hl=en), [Gabriele Spadaro](https://scholar.google.com/citations?hl=en&user=9uugWy0AAAAJ), [Chen Ju](https://voide1220.github.io), [Shuai Xiao](https://sites.google.com/view/xiao-shuai/home), [Victor Quétu](https://scholar.google.com/citations?hl=en&user=wfwULQUAAAAJ), [Enzo Tartaglione✉️](https://enzotarta.github.io/) (*Equal Contribution)
 
 **Turbo: Informativity-Driven Acceleration Plug-In for Vision-Language Models** (ECCV 2024, **Oral**) [[Paper](https://arxiv.org/pdf/2407.11717)] <br>
