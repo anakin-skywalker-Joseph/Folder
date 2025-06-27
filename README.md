@@ -14,6 +14,8 @@
 - 🔥 **Plug-and-play** Can be directly applied in most of VLMs without retraining. Can also be used for training acceleration. Very easy to implement (10-min-ready).
 
 ## 📜 News
+🚀 [2025/6/26] FOLDER has been accepted by ICCV2025.
+
 🚀 [2025/2/9] We release the code for BLIP and MLLMs (LLaVA1.5, Minigptv2, VITA1.5, VILA1.5, WePOINTs1.5, VideoLLaVA).
 
 🚀 [2024/7/3] Turbo has been accepted by ECCV2024 as oral presentation.
